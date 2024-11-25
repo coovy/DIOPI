@@ -890,4 +890,15 @@ class CustomizedTest(object):
 
     def layer_normGB(input, weight, bias, eps, normalized_shape):
         return torch.nn.functional.layer_norm(input=input, weight=weight, bias=bias, eps=eps, normalized_shape=normalized_shape)
-
+    
+    def batch_norm_GB(input, running_mean, running_var, weight, bias, training=False, momentum=0.1, eps=1e-05):
+        return torch.nn.functional.batch_norm(
+            input,
+            running_mean,
+            running_var,
+            weight,
+            bias,
+            training,
+            momentum,
+            eps,
+        )

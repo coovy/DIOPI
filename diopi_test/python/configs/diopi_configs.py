@@ -54,6 +54,58 @@ diopi_configs = {
             ]
         ),
     ),
+    
+    'batch_norm_GB': dict(
+        name=["batch_norm_GB"],
+        interface=['CustomizedTest'],
+        dtype=[np.float32, np.float16, np.float64],
+        atol=1e-3,
+        rtol=1e-4,
+        atol_half=1e-1,
+        rtol_half=1e-2,
+        para=dict(
+            # training=[False, False, True, True, False, True, True, True],
+            # momentum=[0.1, 0.15, 0.2, 0.25, 0, 1, -1, -0.3],
+            # eps=[1e-5, 1e-4, 1e-4, 1e-5, 0, 1, -1, -1e-5],
+            training=[False, False, True, True],
+            momentum=[0.1, 0.15, 0.2, 0.25],
+            eps=[1e-5, 1e-4, 1e-4, 1e-5],
+        ),
+        tensor_para=dict(
+            args=[
+                {
+                    "ins": ["input"],
+                    # "shape": ((2, 8, 32, 56, 56), (2, 64, 32, 32), (2, 96, 28), (2, 16),
+                    #           (0, 7, 32, 56, 56), (0, 15, 32, 32), (0, 23, 5), (0, 16)),
+                    "shape": ((2, 16, 32, 56, 56), (2, 64, 32, 32), (2, 96, 28), (2, 16)),
+                    # "requires_grad": [True],
+                    "gen_fn": 'Genfunc.randn',
+                },
+                {
+                    "ins": ["running_mean"],
+                    # "shape": ((8, ), (64, ), None, (16, ),
+                    #           (7, ), (15, ), None, (16, )),
+                    "shape": ((16, ), (64, ), None, (16, )),
+                    "gen_fn": 'Genfunc.zeros',
+                },
+                {
+                    "ins": ["running_var"],
+                    # "shape": ((8, ), (64, ), None, (16, ),
+                    #           (7, ), (15, ), None, (16, )),
+                    "shape": ((16, ), (64, ), None, (16, )),
+                    "gen_fn": 'Genfunc.ones',
+                },
+                {
+                    "ins": ["weight", "bias"],
+                    #"requires_grad": [True],
+                    # "shape": ((8, ), (64, ), (96, ), (16, ),
+                    #           (7, ), (15, ), (96, ), (16, )),
+                    "shape": ((16, ), (64, ), (96, ), (16, )),
+                    "gen_fn": 'Genfunc.randn',
+                },
+            ]
+        ),
+    ),
 
     'batch_norm_nan': dict(
         name=["batch_norm"],

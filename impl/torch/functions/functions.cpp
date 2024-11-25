@@ -2431,6 +2431,24 @@ diopiError_t diopiSigmoidFocalLoss(diopiContextHandle_t ctx, diopiTensorHandle_t
     return diopiSuccess;
 }
 
+diopiError_t diopiBatchNormGB(diopiContextHandle_t ctx, diopiTensorHandle_t out, diopiTensorHandle_t save_mean, diopiTensorHandle_t save_invstd,
+                            diopiConstTensorHandle_t input, diopiConstTensorHandle_t weight, diopiConstTensorHandle_t bias, diopiTensorHandle_t running_mean,
+                            diopiTensorHandle_t running_var, bool training, double momentum, double eps) {
+    impl::aten::setCurStream(ctx);
+    auto atInput = impl::aten::buildATen(input);
+    auto atWeight = impl::aten::buildATen(weight);
+    auto atBias = impl::aten::buildATen(bias);
+    auto atRunningMean = impl::aten::buildATen(running_mean);
+    auto atRunningVar = impl::aten::buildATen(running_var);
+    auto atOut = impl::aten::buildATen(out);
+    auto atSaveMean = impl::aten::buildATen(save_mean);
+    auto atSaveInvstd = impl::aten::buildATen(save_invstd);
+    CALL_ATEN_CUDA_FUNC(
+        native_batch_norm_out, atOut, atSaveMean, atSaveInvstd, atInput, atWeight, atBias, atRunningMean, atRunningVar, training, momentum, eps);
+
+    return diopiSuccess;
+}
+
 diopiError_t diopiBatchNorm(diopiContextHandle_t ctx, diopiTensorHandle_t out, diopiTensorHandle_t save_mean, diopiTensorHandle_t save_invstd,
                             diopiConstTensorHandle_t input, diopiConstTensorHandle_t weight, diopiConstTensorHandle_t bias, diopiTensorHandle_t running_mean,
                             diopiTensorHandle_t running_var, bool training, double momentum, double eps) {
@@ -2443,6 +2461,29 @@ diopiError_t diopiBatchNorm(diopiContextHandle_t ctx, diopiTensorHandle_t out, d
     auto atOut = impl::aten::buildATen(out);
     auto atSaveMean = impl::aten::buildATen(save_mean);
     auto atSaveInvstd = impl::aten::buildATen(save_invstd);
+    CALL_ATEN_CUDA_FUNC(
+        native_batch_norm_out, atOut, atSaveMean, atSaveInvstd, atInput, atWeight, atBias, atRunningMean, atRunningVar, training, momentum, eps);
+
+    return diopiSuccess;
+}
+
+diopiError_t diopiBatchNormGB(diopiContextHandle_t ctx, diopiTensorHandle_t out, diopiTensorHandle_t save_mean, diopiTensorHandle_t save_invstd,
+                            diopiConstTensorHandle_t input, diopiConstTensorHandle_t weight, diopiConstTensorHandle_t bias, diopiTensorHandle_t running_mean,
+                            diopiTensorHandle_t running_var, bool training, double momentum, double eps, int64_t axis) {
+    impl::aten::setCurStream(ctx);
+    auto atInput = impl::aten::buildATen(input);
+    auto atWeight = impl::aten::buildATen(weight);
+    auto atBias = impl::aten::buildATen(bias);
+    auto atRunningMean = impl::aten::buildATen(running_mean);
+    auto atRunningVar = impl::aten::buildATen(running_var);
+    auto atOut = impl::aten::buildATen(out);
+    auto atSaveMean = impl::aten::buildATen(save_mean);
+    auto atSaveInvstd = impl::aten::buildATen(save_invstd);
+
+    // std::vector<int64_t> dims(atInput.dim());
+    // std::iota(dims.begin(), dims.end(), 0); 
+    // std::swap(dims[1], dims[axis]);
+    // auto permutedInput = atInput.permute(dims);
     CALL_ATEN_CUDA_FUNC(
         native_batch_norm_out, atOut, atSaveMean, atSaveInvstd, atInput, atWeight, atBias, atRunningMean, atRunningVar, training, momentum, eps);
 
